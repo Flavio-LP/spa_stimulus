@@ -26,6 +26,13 @@ export default class extends Controller {
     
     
       if (!response.ok) {
+
+        if (response.status == 422) {
+          const erros = await response.json();
+          alert(JSON.stringify(erros));
+          return;
+        }
+
         throw new Error(`Erro ao cadastrar aluno': ${reponse.status}`);
 
         
@@ -48,11 +55,11 @@ export default class extends Controller {
             </div>
             <div class="form-group" style="margin-bottom: 10px">
                 <label for="telefone">Telefone</label>    
-                <input type="text" class="form-control"  required="true" name="telefone" placeholder="Telefone">
+                <input type="text" class="form-control" required="true" name="telefone" placeholder="Telefone">
             </div>
             <div class="form-group" style="margin-bottom: 10px">
                 <label for="matricula">Matricula</label>
-                <input type="text" class="form-control"  required="true" name="matricula" placeholder="Matricula">
+                <input type="text" class="form-control" required="true" name="matricula" placeholder="Matricula">
             </div >    
             <button type="submit" style="margin-bottom: 10px" class="btn btn-primary">Cadastrar</button>
             <button type="button" data-action="click->alunos#ListarAlunos" class="btn btn-danger">Cancelar</button>
