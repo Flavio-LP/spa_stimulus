@@ -7,6 +7,8 @@ export default class extends Controller {
 
   static base_uri = `http://localhost:3000`;
 
+  asyc
+
   async create(event) {
     event.preventDefault();
     const form = event.target;
@@ -99,8 +101,8 @@ export default class extends Controller {
                              <td>${aluno.telefone}</td>
                              <td>${aluno.matricula}</td>
                              <td style="width: 200px">
-                                <button type="button" class="btn btn-warning">Editar</button>
-                                <button type="button" class="btn btn-danger">Apagar</button>
+                                <button type="button" class="btn btn-warning" data-action="click->alunos#edit">Editar</button>
+                                <button type="button" class="btn btn-danger" data-action="click->alunos#delete">Apagar</button>
                               </td> 
                            </tr>
                          `
