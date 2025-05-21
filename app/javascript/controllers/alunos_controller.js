@@ -7,6 +7,62 @@ export default class extends Controller {
 
   static base_uri = `http://localhost:3000`;
 
+  async create(event) {
+    event.preventDefault();
+    const form = event.target;
+    const aluno = {
+      nome: form.elements['nome'].value,
+      telefone: form.elements['telefone'].value,
+      matricula: form.elements['matricula'].value
+    }
+    try{
+      const response = await fetch(`${this.constructor.base_uri}/alunos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(aluno)
+      });
+    
+    
+      if (!response.ok) {
+        throw new Error(`Erro ao cadastrar aluno': ${reponse.status}`);
+
+        
+      }
+      this.ListarAlunos();
+    }
+       catch(error){
+        console.error('Erro ao cadastrar aluno', error);
+      }
+  }
+
+  new() {
+
+      this.element.innerHTML = `
+        <h1>Novo Aluno</h1>
+          <form data-action= "submit->alunos#create" style="display: flex; flex-direction: column; ">
+            <div class="form-group" style="margin-bottom: 10px">
+                <label for="nome">Nome</label>
+                <input type="text" class="form-control" required="true" name="nome" placeholder="Nome">
+            </div>
+            <div class="form-group" style="margin-bottom: 10px">
+                <label for="telefone">Telefone</label>    
+                <input type="text" class="form-control"  required="true" name="telefone" placeholder="Telefone">
+            </div>
+            <div class="form-group" style="margin-bottom: 10px">
+                <label for="matricula">Matricula</label>
+                <input type="text" class="form-control"  required="true" name="matricula" placeholder="Matricula">
+            </div >    
+            <button type="submit" style="margin-bottom: 10px" class="btn btn-primary">Cadastrar</button>
+            <button type="button" data-action="click->alunos#ListarAlunos" class="btn btn-danger">Cancelar</button>
+          </form>
+          `
+
+
+
+  }
+
   async ListarAlunos(){
 
      try{
@@ -16,6 +72,7 @@ export default class extends Controller {
 
             if (alunos.length > 0) {
               this.element.innerHTML = `
+                  <button type="button" class="btn btn-primary" data-action="click->alunos#new">Cadastrar</button>
                   <table class="table">
                     <thead>
                       <tr>
