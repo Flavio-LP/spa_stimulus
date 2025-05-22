@@ -72,6 +72,47 @@ export default class extends Controller {
 
   }
 
+  async edit_aluno(event){
+
+    event.preventDefault();
+    const form = event.target;
+    const aluno = {
+      id: form.elements['id'].value,
+      nome: form.elements['nome'].value,
+      telefone: form.elements['telefone'].value,
+      matricula: form.elements['matricula'].value
+    }
+
+    try{
+      const response = await fetch(`${this.constructor.base_uri}/alunos/${aluno.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(aluno)
+      });
+    
+    
+      if (!response.ok) {
+
+        if (!response.status == 422) {
+          const erros = await response.json();
+          alert(JSON.stringify(erros));
+          return;
+        } 
+
+
+        
+      }
+      this.ListarAlunos();
+    }
+       catch(error){
+        console.error('Erro ao Alterar aluno');
+      }
+
+  }
+          
+
   async ListarAlunos(){
 
      try{
@@ -101,8 +142,8 @@ export default class extends Controller {
                              <td>${aluno.telefone}</td>
                              <td>${aluno.matricula}</td>
                              <td style="width: 200px">
-                                <button type="button" class="btn btn-warning" data-action="click->alunos#edit">Editar</button>
-                                <button type="button" class="btn btn-danger" data-action="click->alunos#delete">Apagar</button>
+                                <button type="button" class="btn btn-warning" data-action="click->alunos#edit" data-aluno-id="${aluno.id}">Editar</button>
+                                <button type="button" class="btn btn-danger" data-action="click->alunos#delete" data-aluno-id="${aluno.id}">Apagar</button>
                               </td> 
                            </tr>
                          `
@@ -112,20 +153,98 @@ export default class extends Controller {
                   </table>`
             }else{
               this.element.innerHTML = `
-                  <div class="alert alert-danger" role="alert">
-                    aluno cadastrado!
+                  <button type="button" class="btn btn-primary" data-action="click->alunos#new">Cadastrar</button>
+                  <div class="alert alert-warning" role="alert" style="margin-top: 10px">
+                    Alunos não cadastrados!
                   </div>`
             }Nenhum 
-          console.log(alunos);
         }else {
           throw new Error('Erro:' || response.status);
         }
-     }catch{
-        console.log('Erro ao buscar alunos', error);
+     }catch(error){
+        console.log('Erro ao buscar alunos');
      }
 
     
   } 
+
+  async edit(event){
+      const id = event.currentTarget.dataset.alunoId;
+
+
+      try{
+          const response = await fetch(`${this.constructor.base_uri}/alunos/${id}`);
+          const aluno = await response.json();
+          if (response.ok) {
+                this.element.innerHTML = `
+
+                    <form data-action= "submit->alunos#edit_aluno" style="display: flex; flex-direction: column; ">
+                    <input type="hidden" name="id" value="${aluno.id}">
+                <div class="form-group" style="margin-bottom: 10px">
+                    <label for="nome">Nome</label>
+                    <input type="text" class="form-control" value = "${aluno.nome}" required="true" name="nome" placeholder="Nome">
+                </div>
+                <div class="form-group" style="margin-bottom: 10px">
+                    <label for="telefone">Telefone</label>    
+                    <input type="text" class="form-control" value = "${aluno.telefone}" required="true" name="telefone" placeholder="Telefone">
+                </div>
+                <div class="form-group" style="margin-bottom: 10px">
+                    <label for="matricula">Matricula</label>
+                    <input type="text" class="form-control" value = "${aluno.matricula}" required="true" name="matricula" placeholder="Matricula">
+                </div >    
+                <button type="submit" style="margin-bottom: 10px" class="btn btn-primary">Alterar</button>
+              </form>`
+
+              }else{
+                   this.element.innerHTML = `<div class="alert alert-danger" role="alert">
+                    aluno alterado!
+                  </div>`
+                }
+
+
+          
+           }
+      catch(error){
+          console.error('Erro ao alterar aluno', error);
+      }
+
+       
+
+    }
+
+  async delete(event){
+    const id = event.currentTarget.dataset.alunoId;
+  
+    if (confirm("Confirma exclusão?")){
+      try{
+      const response = await fetch(`${this.constructor.base_uri}/alunos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    
+    
+      if (!response.ok) {
+
+        if (response.status == 422) {
+          const erros = await response.json();
+          alert(JSON.stringify(erros));
+          return;
+        }
+
+        throw new Error(`Erro ao cadastrar aluno': ${reponse.status}`);
+
+        
+      }
+      this.ListarAlunos();
+    }
+       catch(error){
+        console.error('Erro ao cadastrar aluno', error);
+      }
+    }
+
+  }
 
 }
 
